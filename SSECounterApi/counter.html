@@ -13,8 +13,9 @@
     <div id="events" />
 </body>
 <script>
+    var url = "https://localhost:7183/";
     async function ServerConnection() {
-        const eventSource = new EventSource("https://localhost:7183/sse");
+        const eventSource = new EventSource(url+"sse");
 
         eventSource.onmessage = (event) => {
             document.getElementById("counter").innerText = event.data.replace(/(\r\n|\n|\r)/gm, "");
@@ -26,9 +27,10 @@
     async function CalenderConnection() {
         let username = document.getElementById("name").value;
         if(username=='') return;
-        const eventSourceCal = new EventSource("https://localhost:7183/calender?name="+name);
-
+        const eventSourceCal = new EventSource(url+"calender?name="+username);
+        eventSourceCal.onopen = (data) => console.log(data);
         eventSourceCal.onmessage = (event) => {
+            console.log(event);
             document.getElementById("events").innerText += event.data.replace(/(\r\n|\n|\r)/gm, "");
         }
     }

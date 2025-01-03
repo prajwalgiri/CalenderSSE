@@ -48,7 +48,7 @@ namespace SSECounterApi
             {
                 await _calenderManager.MarkAsSent(@event, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
-                await _httpContextAccessor.HttpContext.Response.WriteAsync($"Event: {@event.Name} {@event.EventDate}\n\n", cancellationToken);
+                await _httpContextAccessor.HttpContext.Response.WriteAsync($"data: {@event.Name} {@event.EventDate}\n\n", cancellationToken);
                 await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
             }
             //Event @event = new Event("",DateTime.Now );
