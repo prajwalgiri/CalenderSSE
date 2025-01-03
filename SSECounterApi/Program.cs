@@ -60,7 +60,7 @@ app.MapGet("/calender", async Task (HttpContext ctx, ICalenderService service, C
     var name = ctx.Request.Query["name"];
     await service.ConnectAsync(token, name);
 });
-app.MapGet("/calender/add", async Task (HttpContext ctx, ICalenderService service, CancellationToken token) =>
+app.MapGet("/calender/add-event", async Task (HttpContext ctx, ICalenderService service, CancellationToken token) =>
 {
     var name = ctx.Request.Query["name"];
     var date = ctx.Request.Query["Date"];
