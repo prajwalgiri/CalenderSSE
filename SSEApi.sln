@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSECounterApi", "SSECounter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSEClient", "SSEClient\SSEClient.csproj", "{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketApi", "WebSocketApi\WebSocketApi.csproj", "{A9706C60-E21D-4418-BA29-244C6E40E4D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketClient", "WebSocketClient\WebSocketClient.csproj", "{6BECB335-90F2-4721-892A-038FC661CC40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9706C60-E21D-4418-BA29-244C6E40E4D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9706C60-E21D-4418-BA29-244C6E40E4D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9706C60-E21D-4418-BA29-244C6E40E4D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9706C60-E21D-4418-BA29-244C6E40E4D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BECB335-90F2-4721-892A-038FC661CC40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BECB335-90F2-4721-892A-038FC661CC40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BECB335-90F2-4721-892A-038FC661CC40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BECB335-90F2-4721-892A-038FC661CC40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
