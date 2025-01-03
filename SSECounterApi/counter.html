@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div id="counter" />
+    <div id="login">
+        <input type="text" id="name" placeholder="username"/>
+        <input type="button" value="connect" id="btnConnect">
+    </div>
+    <div id="events" />
+</body>
+<script>
+    async function ServerConnection() {
+        const eventSource = new EventSource("https://localhost:7183/sse");
+
+        eventSource.onmessage = (event) => {
+            document.getElementById("counter").innerText = event.data.replace(/(\r\n|\n|\r)/gm, "");
+        }
+    }
+
+    //ServerConnection();
+
+    async function CalenderConnection() {
+        let username = document.getElementById("name").value;
+        if(username=='') return;
+        const eventSourceCal = new EventSource("https://localhost:7183/calender?name="+name);
+
+        eventSourceCal.onmessage = (event) => {
+            document.getElementById("events").innerText += event.data.replace(/(\r\n|\n|\r)/gm, "");
+        }
+    }
+    document.getElementById("btnConnect").addEventListener('click',function (){
+      
+
+        CalenderConnection();
+    })
+</script>
+</html>
