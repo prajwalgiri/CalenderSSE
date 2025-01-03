@@ -44,17 +44,18 @@ namespace SSECounterApi
         }
         private async Task WriteEvents(CancellationToken cancellationToken)
         {
-            foreach (var @event in _calenderManager.GetAll(cancellationToken))
+            foreach (var @event in _calenderManager.GetAllUnsent(cancellationToken))
             {
+                await _calenderManager.MarkAsSent(@event, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
-                await _httpContextAccessor.HttpContext.Response.WriteAsync($"data: {@event.Name} {@event.EventDate}\n\n", cancellationToken);
+                await _httpContextAccessor.HttpContext.Response.WriteAsync($"Event: {@event.Name} {@event.EventDate}\n\n", cancellationToken);
                 await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
             }
             //Event @event = new Event("",DateTime.Now );
             //cancellationToken.ThrowIfCancellationRequested();
             //await _httpContextAccessor.HttpContext.Response.WriteAsync($"data: {@event.Name} {@event.EventDate}\n\n", cancellationToken);
             //await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
-            await Task.Delay(1000);
+            await Task.Delay(1000); // simulate delay because the client kept freezing
         }
         
 
