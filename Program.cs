@@ -9,8 +9,8 @@ internal class Program
         // Add services to the container.
 
         builder.Services.AddControllers();
-        builder.Services.AddSingleton<CalenderService>();
-        builder.Services.AddSingleton<CalenderAdapter>();
+        builder.Services.AddTransient<CalenderService>();
+        builder.Services.AddTransient<CalenderAdapter>();
         builder.Services.AddTransient<IHttpContextAccessor,HttpContextAccessor>();
 
         var app = builder.Build();

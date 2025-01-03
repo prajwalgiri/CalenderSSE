@@ -4,7 +4,7 @@ namespace SSEApi.CalenderService
 {
     public class CalenderService(ILogger<CalenderService> logger)
     {
-        private readonly ConcurrentDictionary<string, CalenderAdapter> Clients = new();
+        private  ConcurrentDictionary<string, CalenderAdapter> Clients = new();
         private readonly ConcurrentQueue<Event> History = new();
         public async Task AddEvent(CalenderAdapter service, Event @event)
         {
@@ -15,7 +15,7 @@ namespace SSEApi.CalenderService
         public async Task BroadCastEvent(Event @event, IEnumerable<CalenderAdapter>? receivers = null)
         {
             logger.LogInformation("Broadcasting event: {event}", @event);
-            foreach (var clientCalender in receivers)
+            foreach (var clientCalender in Clients.Values)
             {
                 await clientCalender.SendEvent(@event);
             }
@@ -29,6 +29,7 @@ namespace SSEApi.CalenderService
 
             var userConnected = new UserConnected(name);
             var everyoneElse = Clients.Where(x => x.Key != name).Select(x => x.Value);
+            Clients.TryAdd(name, adapter);
             await this.SendEvent(adapter,new Event("Welcome to the calender", new DateOnly()));
 
             //await SendEvent(adapter, new History(History));
