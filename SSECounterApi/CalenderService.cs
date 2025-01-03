@@ -5,14 +5,14 @@ namespace SSECounterApi
 {
     public class CalenderService : ICalenderService
     {
-        private List<Event> _events;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
-        public CalenderService(IHttpContextAccessor httpContextAccessor, IUserService userService)
+        private readonly ICalenderManager _calenderManager;
+        public CalenderService(IHttpContextAccessor httpContextAccessor, IUserService userService, ICalenderManager calenderManager)
         {
             _httpContextAccessor = httpContextAccessor;
-            _events = new List<Event>();
             _userService = userService;
+            _calenderManager = calenderManager;
         }
         //start connection with client 
         public async Task ConnectAsync(CancellationToken cancellationToken, string name)
@@ -22,7 +22,6 @@ namespace SSECounterApi
                 _httpContextAccessor.HttpContext.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    AddDummyEvents();
                     await WriteEvents(cancellationToken);
                 }
             }
@@ -40,12 +39,12 @@ namespace SSECounterApi
         }
         public async Task AddEvent(Event @event, CancellationToken cancellationToken)
         {
-            _events.Add(@event);
-          
+          await  _calenderManager.Add(@event, cancellationToken);
+
         }
         private async Task WriteEvents(CancellationToken cancellationToken)
         {
-            foreach (var @event in _events)
+            foreach (var @event in _calenderManager.GetAll(cancellationToken))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 await _httpContextAccessor.HttpContext.Response.WriteAsync($"data: {@event.Name} {@event.EventDate}\n\n", cancellationToken);
@@ -57,12 +56,7 @@ namespace SSECounterApi
             //await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
             await Task.Delay(1000);
         }
-        private void AddDummyEvents()
-        {
-            _events.Add(new Event("Event 2 Description", DateTime.Now));
-            _events.Add(new Event("Event 3 Description", DateTime.Now));
-            _events.Add(new Event("Event 4 Description", DateTime.Now));
-        }
+        
 
     }
     public interface ICalenderService

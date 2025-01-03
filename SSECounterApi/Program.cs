@@ -22,6 +22,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ICounterService, CounterService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<ICalenderManager, CalenderManager>();
 builder.Services.AddScoped<ICalenderService, CalenderService>();
 var app = builder.Build();
 
