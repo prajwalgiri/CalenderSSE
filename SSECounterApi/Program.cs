@@ -37,6 +37,8 @@ app.MapControllers();
 app.MapGet("/sse", async Task (HttpContext ctx, ICounterService service, CancellationToken token) =>
 {
     ctx.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
+    ctx.Response.Headers.Append(HeaderNames.CacheControl, "no-cache");
+    ctx.Response.Headers.Append(HeaderNames.Connection, "keep-alive");
 
     var count = service.StartValue;
 
