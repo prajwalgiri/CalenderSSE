@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using System.Text.Json;
+using System.Xml.Linq;
 
 namespace SSECounterApi
 {
@@ -42,6 +43,20 @@ namespace SSECounterApi
         {
             _httpContextAccessor.HttpContext.Response.CompleteAsync();
         }
+
+        public async Task MarkAsSent(string id, CancellationToken cancellationToken)
+        {
+            Guid guid = Guid.Empty;
+                Guid.TryParse(id, out guid);
+            if(id  == null || guid==Guid.Empty)
+            {
+                await _httpContextAccessor.HttpContext.Response.WriteAsync($"Notification Id is Invalid.", cancellationToken);
+                await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
+
+            }
+            await _notificationManager.MarkAsSent(guid, cancellationToken);
+        }
+
         private async Task WriteNotificationToStream(string name, CancellationToken cancellationToken)
         {
             var allNotifications = await _notificationManager.GetAll(name, cancellationToken);
@@ -60,5 +75,6 @@ namespace SSECounterApi
     {
         Task ConnectAsync(CancellationToken cancellationToken, string name);
         Task AddNotification(Notification @Notification, List<string> users, CancellationToken cancellationToken);
+        Task MarkAsSent(string id, CancellationToken cancellationToken);
     }
 }

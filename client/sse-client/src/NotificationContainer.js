@@ -7,7 +7,7 @@ export default function NotificationContainer() {
 
 const [data, setData] = useState('data');
 useEffect(() => {
-    const evtSource = new EventSource('https://localhost:7183/sse');
+    const evtSource = new EventSource('https://localhost:7183/notifications?name=praj');
     evtSource.onmessage = (event) => {
       if (event.data) {
         setData(event.data);

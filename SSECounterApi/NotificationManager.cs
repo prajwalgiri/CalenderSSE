@@ -39,17 +39,22 @@
                      );
         }
 
-        public Task MarkAsSent(Notification notification, CancellationToken cancellationToken)
+        public async Task MarkAsSent(Guid guid, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await Task.Run(() =>
+            {
+            var notification= _notifications.Select(n => n.Keys.First(x => x.id == guid)).First();
+           var nkey= _notifications.Find(x=> x.ContainsKey(notification));
+            _notifications.Remove(nkey);
+            });
         }
 
         private void AddDummyNotifications()
         {
             var _dummy= new Dictionary<Notification, List<string>>();
-            _dummy.Add(new Notification("Welcome"), new List<string>());
-            _dummy.Add(new Notification("This is a Test notification"), new List<string>());
-            _dummy.Add(new Notification("Happy to have you"), new List<string>());
+            _dummy.Add(new Notification(Guid.NewGuid(),"Welcome"), new List<string>());
+            _dummy.Add(new Notification(Guid.NewGuid(),"This is a Test notification"), new List<string>());
+            _dummy.Add(new Notification(Guid.NewGuid(), "Happy to have you"), new List<string>());
             _notifications.Add(_dummy);
         }
     }
@@ -57,9 +62,9 @@
     {
         public Task Add(Notification @Notification, List<string> users, CancellationToken cancellationToken);
         public Task<List<Notification>> GetAll(string userid, CancellationToken cancellationToken);
-        public Task MarkAsSent(Notification notification, CancellationToken cancellationToken);
+        public Task MarkAsSent(Guid id, CancellationToken cancellationToken);
 
     }
-    public record Notification(string msg);
+    public record Notification(Guid id,string msg);
     public record AddNotification(Notification notification,string users);
 }
