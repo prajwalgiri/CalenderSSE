@@ -1,5 +1,6 @@
 using Microsoft.Net.Http.Headers;
 using SSECounterApi;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,9 @@ builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ICalenderManager, CalenderManager>();
 builder.Services.AddScoped<ICalenderService, CalenderService>();
+builder.Services.AddSingleton<INotificationManager, NotificationManager>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,19 +60,24 @@ app.MapGet("/sse", async Task (HttpContext ctx, ICounterService service, Cancell
 
     await ctx.Response.CompleteAsync();
 });
-
-app.MapGet("/calender", async Task (HttpContext ctx, ICalenderService service, CancellationToken token) =>
+app.MapGet("/notifications", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
 {
     var name = ctx.Request.Query["name"];
     await service.ConnectAsync(token, name);
 });
-app.MapGet("/calender/add-event", async Task (HttpContext ctx, ICalenderService service, CancellationToken token) =>
+app.MapPost("/notifications/add", async Task (HttpContext ctx,
+    INotificationService service,
+    CancellationToken token
+    
+    ) =>
 {
-    var name = ctx.Request.Query["name"];
-    var date = ctx.Request.Query["Date"];
-    var @event = new Event(name, DateTime.Parse(date));
-    await service.AddEvent(@event, token);
+    var users = ctx.Request.Form["users"];
+    var msg = ctx.Request.Form["msg"];
+    var userList= JsonSerializer.Deserialize<List<string>>(msg)??new List<string>();
+    var @notification = new Notification(msg);
+    await service.AddNotification(@notification,userList, token);
 });
+
 app.UseCors(myCors);
 app.Run();
 //await new SSEClient().GetAll();

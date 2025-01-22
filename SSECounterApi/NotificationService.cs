@@ -1,4 +1,8 @@
-﻿namespace SSECounterApi
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using System.Text.Json;
+
+namespace SSECounterApi
 {
     public class NotificationService : INotificationService
     {
@@ -12,19 +16,49 @@
             _notificationManager = notificationManager;
         }
 
-        public async Task AddNotification(Event @event, CancellationToken cancellationToken)
+        public async Task AddNotification(Notification @Notification, List<string> users, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _notificationManager.Add(@Notification, users, cancellationToken);
         }
 
         public async Task ConnectAsync(CancellationToken cancellationToken, string name)
         {
-            throw new NotImplementedException();
+            if (_userService.AddUser(name))
+            {
+                _httpContextAccessor.HttpContext.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await WriteNotificationToStream(name, cancellationToken);
+                }
+
+            }
+            else
+            {
+                await _httpContextAccessor.HttpContext.Response.WriteAsync($"Login Failed for User: {name}", cancellationToken);
+                await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
+            }
+        }
+        public async Task DisconnectAsync(CancellationToken cancellationToken)
+        {
+            _httpContextAccessor.HttpContext.Response.CompleteAsync();
+        }
+        private async Task WriteNotificationToStream(string name, CancellationToken cancellationToken)
+        {
+            var allNotifications = await _notificationManager.GetAll(name, cancellationToken);
+            foreach (var notification in allNotifications)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var payload = JsonSerializer.Serialize(notification);
+                await _httpContextAccessor.HttpContext.Response.WriteAsync($"data: {payload} \n\n", cancellationToken);
+                await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
+
+            }
+            await Task.Delay(1000);// simulate delay because the client kept freezing
         }
     }
     public interface INotificationService
     {
         Task ConnectAsync(CancellationToken cancellationToken, string name);
-        Task AddNotification(Event @event, CancellationToken cancellationToken);
+        Task AddNotification(Notification @Notification, List<string> users, CancellationToken cancellationToken);
     }
 }
