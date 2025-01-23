@@ -26,7 +26,9 @@ namespace SSECounterApi
         {
             if (_userService.AddUser(name))
             {
-                _httpContextAccessor.HttpContext.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
+                //just to add dummy notifications to write to client 
+                await _notificationManager.AddDummyNotifications(name); 
+                 _httpContextAccessor.HttpContext.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     await WriteNotificationToStream(name, cancellationToken);
@@ -45,6 +47,18 @@ namespace SSECounterApi
         }
 
         public async Task MarkAsSent(string id,string name, CancellationToken cancellationToken)
+        {
+            Guid guid = Guid.Empty;
+            Guid.TryParse(id, out guid);
+            if (id == null || guid == Guid.Empty)
+            {
+                await _httpContextAccessor.HttpContext.Response.WriteAsync($"Notification Id is Invalid.", cancellationToken);
+                await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
+
+            }
+            await _notificationManager.MarkAsSent(guid,name, cancellationToken);
+        }
+        public async Task MarkAsRead(string id,string name, CancellationToken cancellationToken)
         {
             Guid guid = Guid.Empty;
             Guid.TryParse(id, out guid);
@@ -77,5 +91,6 @@ namespace SSECounterApi
         Task ConnectAsync(CancellationToken cancellationToken, string name);
         Task AddNotification(Notification @Notification, List<string> users, CancellationToken cancellationToken);
         Task MarkAsSent(string id,string name, CancellationToken cancellationToken);
+        Task MarkAsRead(string id,string name, CancellationToken cancellationToken);
     }
 }

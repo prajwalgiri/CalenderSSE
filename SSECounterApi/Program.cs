@@ -45,7 +45,7 @@ app.MapGet("/notification/mark-as-read", async Task (HttpContext ctx, INotificat
 {
     var id = ctx.Request.Query["id"];
     var name = ctx.Request.Query["user"];
-    await service.MarkAsSent(id,name, token);
+    await service.MarkAsRead(id,name, token);
 });
 app.MapPost("/notifications/add", async Task (HttpContext ctx,
     INotificationService service,

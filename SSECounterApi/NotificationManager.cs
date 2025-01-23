@@ -1,12 +1,14 @@
-﻿namespace SSECounterApi
+﻿using System.Runtime.CompilerServices;
+
+namespace SSECounterApi
 {
     public class NotificationManager : INotificationManager
     {
-        private readonly List<Tuple<Notification,string,bool>> _notifications; //Notification,user,isSent 
+                                //Notification,user,isSent ,hasread
+        private readonly List<Tuple<Notification,string,bool,bool>> _notifications; 
         public NotificationManager()
         {
-            _notifications = new List<Tuple<Notification, string, bool>>();
-            AddDummyNotifications();
+            _notifications = new List<Tuple<Notification, string, bool, bool>>();
         }
         public async Task Add(Notification @Notification, List<string> users, CancellationToken cancellationToken)
         {
@@ -15,7 +17,7 @@
                 if (users.Count == 0) users.Add("All"); 
                 foreach (var user in users)
                 {
-                    _notifications.Add(new Tuple<Notification, string, bool>(@Notification, user, false));
+                    _notifications.Add(new Tuple<Notification, string, bool,bool>(@Notification, user, false,false));
                 }
             });
         }
@@ -61,16 +63,30 @@
             {
                 var notification = _notifications.Where(n => n.Item1.id == guid && (n.Item2 == user|| n.Item2=="All")).FirstOrDefault()!;
                 _notifications.Remove(notification);
-                _notifications.Add(new Tuple<Notification, string, bool>(notification.Item1,notification.Item2,true));
+                _notifications.Add(new Tuple<Notification, string, bool,bool>(notification.Item1,notification.Item2,true,false));
                
             });
         }
-
-        private void AddDummyNotifications()
+        public async Task MarkAsRead(Guid guid, string user, CancellationToken cancellationToken)
         {
-            _notifications.Add(new Tuple<Notification, string, bool>(new Notification(Guid.NewGuid(), "Welcome"), "All", false));
-            _notifications.Add(new Tuple<Notification, string, bool>(new Notification(Guid.NewGuid(), "This is a Test notification"), "All", false));
-            _notifications.Add(new Tuple<Notification, string, bool>(new Notification(Guid.NewGuid(), "Happy to have you"), "All", false));
+            await Task.Run(() =>
+            {
+                var notification = _notifications.Where(n => n.Item1.id == guid && (n.Item2 == user || n.Item2 == "All")).FirstOrDefault()!;
+                _notifications.Remove(notification);
+                _notifications.Add(new Tuple<Notification, string, bool, bool>(notification.Item1, notification.Item2, notification.Item3, true));
+
+            });
+        }
+
+        public async Task  AddDummyNotifications(string user)
+        {
+            if(_notifications.FindAll(x=> x.Item2==user).Count>0) return;
+           await Task.Run(() =>
+            {
+                _notifications.Add(new Tuple<Notification, string, bool, bool>(new Notification(Guid.NewGuid(), "Welcome"), user, false,false));
+                _notifications.Add(new Tuple<Notification, string, bool, bool>(new Notification(Guid.NewGuid(), "This is a Test notification"), user, false,false));
+                _notifications.Add(new Tuple<Notification, string, bool, bool>(new Notification(Guid.NewGuid(), "Happy to have you"), user, false,false));
+            });       
         }
     }
     public interface INotificationManager
@@ -79,8 +95,8 @@
         public Task<List<Notification>> GetAll(string userid, CancellationToken cancellationToken);
         public Task<List<Notification>> GetAllUnsent(string userid, CancellationToken cancellationToken);
         public Task MarkAsSent(Guid id,string user, CancellationToken cancellationToken);
-
+        public Task MarkAsRead(Guid id,string user, CancellationToken cancellationToken);
+        public  Task AddDummyNotifications(string user);
     }
     public record Notification(Guid id,string msg);
-    public record AddNotification(Notification notification,string users);
 }
