@@ -2,60 +2,58 @@
 {
     public class NotificationManager : INotificationManager
     {
-        private readonly List<Dictionary<Notification, List<string>>> _notifications;
+        private readonly List<Tuple<Notification,string,bool>> _notifications; //Notification,user,isSent 
         public NotificationManager()
         {
-            _notifications = new List<Dictionary<Notification, List<string>>>();
+            _notifications = new List<Tuple<Notification, string, bool>>();
             AddDummyNotifications();
         }
         public async Task Add(Notification @Notification, List<string> users, CancellationToken cancellationToken)
         {
             await Task.Run(() =>
             {
-                var val = new Dictionary<Notification, List<string>>();
-                val.Add(@Notification, users);
-                _notifications.Add(val);
+                if (users.Count == 0) users.Add("All"); 
+                foreach (var user in users)
+                {
+                    _notifications.Add(new Tuple<Notification, string, bool>(@Notification, user, false));
+                }
             });
         }
 
         public async Task<List<Notification>> GetAll(string userid, CancellationToken cancellationToken)
         {
             return await Task.Run(()=> _notifications.Where(n =>
-                     {
-                         var users = n.Values.Cast<List<string>>().First();
-                             if (users.Any())
-                             {
-                                 if (users.Contains(userid))
-                                 {
-                                     return true;
-                                 }
-                                 else { return false; }
-                             }
-                             else
-                             {
-                                 return true;
-                             }
-                     }).SelectMany(x => x.Keys).ToList()
-                     );
+            {
+                var toUser = n.Item2;
+                if (toUser == userid)
+                {
+                    return true;
+                }
+                else if (toUser == "All")
+                    return true;
+                else
+                {
+                    return false;
+                }
+                }).Select(x => x.Item1).ToList()
+            );
         }
 
         public async Task MarkAsSent(Guid guid, CancellationToken cancellationToken)
         {
             await Task.Run(() =>
             {
-            var notification= _notifications.Select(n => n.Keys.First(x => x.id == guid)).First();
-           var nkey= _notifications.Find(x=> x.ContainsKey(notification));
-            _notifications.Remove(nkey);
+                var notification= _notifications.Find(n => n.Item1.id == guid);
+                var nkey= _notifications.Find(x=> x==notification)!;
+                _notifications.Remove(nkey);
             });
         }
 
         private void AddDummyNotifications()
         {
-            var _dummy= new Dictionary<Notification, List<string>>();
-            _dummy.Add(new Notification(Guid.NewGuid(),"Welcome"), new List<string>());
-            _dummy.Add(new Notification(Guid.NewGuid(),"This is a Test notification"), new List<string>());
-            _dummy.Add(new Notification(Guid.NewGuid(), "Happy to have you"), new List<string>());
-            _notifications.Add(_dummy);
+            _notifications.Add(new Tuple<Notification, string, bool>(new Notification(Guid.NewGuid(), "Welcome"), "All", false));
+            _notifications.Add(new Tuple<Notification, string, bool>(new Notification(Guid.NewGuid(), "This is a Test notification"), "All", false));
+            _notifications.Add(new Tuple<Notification, string, bool>(new Notification(Guid.NewGuid(), "Happy to have you"), "All", false));
         }
     }
     public interface INotificationManager
