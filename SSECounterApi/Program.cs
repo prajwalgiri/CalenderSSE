@@ -20,11 +20,8 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
-builder.Services.AddScoped<ICounterService, CounterService>();
 builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<ICalenderManager, CalenderManager>();
-builder.Services.AddScoped<ICalenderService, CalenderService>();
 builder.Services.AddSingleton<INotificationManager, NotificationManager>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
@@ -38,28 +35,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/sse", async Task (HttpContext ctx, ICounterService service, CancellationToken token) =>
-{
-    ctx.Response.Headers.Append(HeaderNames.ContentType, "text/event-stream");
-    ctx.Response.Headers.Append(HeaderNames.CacheControl, "no-cache");
-    ctx.Response.Headers.Append(HeaderNames.Connection, "keep-alive");
 
-    var count = service.StartValue;
-
-    while (count >= 0)
-    {
-        token.ThrowIfCancellationRequested();
-
-        await service.CountdownDelay(token);
-
-        await ctx.Response.WriteAsync($"data: {count}\n\n", cancellationToken: token);
-        await ctx.Response.Body.FlushAsync(cancellationToken: token);
-
-        count--;
-    }
-
-    await ctx.Response.CompleteAsync();
-});
 app.MapGet("/notifications", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
 {
     var name = ctx.Request.Query["name"];
