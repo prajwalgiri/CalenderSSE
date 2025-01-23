@@ -67,8 +67,9 @@ app.MapGet("/notifications", async Task (HttpContext ctx, INotificationService s
 });
 app.MapGet("/notification/mark-as-read", async Task (HttpContext ctx, INotificationService service, CancellationToken token) =>
 {
+    var id = ctx.Request.Query["id"];
     var name = ctx.Request.Query["id"];
-    await service.MarkAsSent(name,token);
+    await service.MarkAsSent(id,name, token);
 });
 app.MapPost("/notifications/add", async Task (HttpContext ctx,
     INotificationService service,
@@ -78,7 +79,7 @@ app.MapPost("/notifications/add", async Task (HttpContext ctx,
 {
     var users = ctx.Request.Form["users"];
     var msg = ctx.Request.Form["msg"];
-    var userList= JsonSerializer.Deserialize<List<string>>(msg)??new List<string>();
+    var userList= JsonSerializer.Deserialize<List<string>>(users)??new List<string>();
     var @notification = new Notification(Guid.NewGuid(),msg);
     await service.AddNotification(@notification,userList, token);
 });

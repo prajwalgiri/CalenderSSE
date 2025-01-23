@@ -38,14 +38,31 @@
                 }).Select(x => x.Item1).ToList()
             );
         }
+        public async Task<List<Notification>> GetAllUnsent(string userid, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() => _notifications.Where(n =>
+            {
+                var toUser = n.Item2;
+                if (toUser == userid|| toUser == "All")
+                {
+                    return !n.Item3;
+                }
+                else
+                {
+                    return false;
+                }
+            }).Select(x => x.Item1).ToList()
+            );
+        }
 
-        public async Task MarkAsSent(Guid guid, CancellationToken cancellationToken)
+        public async Task MarkAsSent(Guid guid,string user, CancellationToken cancellationToken)
         {
             await Task.Run(() =>
             {
-                var notification= _notifications.Find(n => n.Item1.id == guid);
-                var nkey= _notifications.Find(x=> x==notification)!;
-                _notifications.Remove(nkey);
+                var notification = _notifications.Where(n => n.Item1.id == guid && (n.Item2 == user|| n.Item2=="All")).FirstOrDefault()!;
+                _notifications.Remove(notification);
+                _notifications.Add(new Tuple<Notification, string, bool>(notification.Item1,notification.Item2,true));
+               
             });
         }
 
@@ -60,7 +77,8 @@
     {
         public Task Add(Notification @Notification, List<string> users, CancellationToken cancellationToken);
         public Task<List<Notification>> GetAll(string userid, CancellationToken cancellationToken);
-        public Task MarkAsSent(Guid id, CancellationToken cancellationToken);
+        public Task<List<Notification>> GetAllUnsent(string userid, CancellationToken cancellationToken);
+        public Task MarkAsSent(Guid id,string user, CancellationToken cancellationToken);
 
     }
     public record Notification(Guid id,string msg);
