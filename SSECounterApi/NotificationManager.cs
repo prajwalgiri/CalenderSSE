@@ -61,7 +61,8 @@ namespace SSECounterApi
         {
             await Task.Run(() =>
             {
-                var notification = _notifications.Where(n => n.Item1.id == guid && (n.Item2 == user|| n.Item2=="All")).FirstOrDefault()!;
+                var notification = _notifications.Where(n => n.Item1.id == guid && (n.Item2 == user|| n.Item2=="All")).FirstOrDefault();
+                if (notification == null) return;
                 _notifications.Remove(notification);
                 _notifications.Add(new Tuple<Notification, string, bool,bool>(notification.Item1,notification.Item2,true,false));
                
@@ -72,8 +73,11 @@ namespace SSECounterApi
             await Task.Run(() =>
             {
                 var notification = _notifications.Where(n => n.Item1.id == guid && (n.Item2 == user || n.Item2 == "All")).FirstOrDefault()!;
+                if (notification == null) return;
                 _notifications.Remove(notification);
+                var newnotification = new Notification(Guid.NewGuid(),"Read: Msg with GUID: "+notification.Item1.id);
                 _notifications.Add(new Tuple<Notification, string, bool, bool>(notification.Item1, notification.Item2, notification.Item3, true));
+                //_notifications.Add(new Tuple<Notification, string, bool, bool>(newnotification, user, false, false));
 
             });
         }

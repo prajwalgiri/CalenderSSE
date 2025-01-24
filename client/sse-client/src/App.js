@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import NotificationContainer from './NotificationContainer';
+import CustomToast from './CustomToastContainer';
 
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <NotificationContainer />
+        <CustomToast />
         <a
           className="App-link"
           href="https://reactjs.org"

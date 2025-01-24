@@ -37,6 +37,7 @@ namespace SSECounterApi
             }
             else
             {
+                 _httpContextAccessor.HttpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await _httpContextAccessor.HttpContext.Response.WriteAsync($"Login Failed for User: {name}", cancellationToken);
                 await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
             }
@@ -68,7 +69,7 @@ namespace SSECounterApi
                 await _httpContextAccessor.HttpContext.Response.Body.FlushAsync(cancellationToken);
 
             }
-            await _notificationManager.MarkAsSent(guid,name, cancellationToken);
+            await _notificationManager.MarkAsRead(guid,name, cancellationToken);
         }
 
         private async Task WriteNotificationToStream(string name, CancellationToken cancellationToken)
