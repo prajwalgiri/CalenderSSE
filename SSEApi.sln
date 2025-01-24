@@ -5,8 +5,6 @@ VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSECounterApi", "SSECounterApi\SSECounterApi.csproj", "{D1B92942-D68F-4C3F-B5FA-8174855CF785}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSEClient", "SSEClient\SSEClient.csproj", "{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{D1B92942-D68F-4C3F-B5FA-8174855CF785}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1B92942-D68F-4C3F-B5FA-8174855CF785}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1B92942-D68F-4C3F-B5FA-8174855CF785}.Release|Any CPU.Build.0 = Release|Any CPU
-		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{274DAC4E-A0F0-4D7B-8E9A-BB9EAC57C5E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

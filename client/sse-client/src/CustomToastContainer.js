@@ -17,7 +17,7 @@ useEffect(() => {
         setData(event.data);
         console.log(event,'event');
         setId(JSON.parse(event.data).id);
-        toast((event.data),{onClose: handleclose(event.data)});
+        toast(Msg(event.data));
         console.log(JSON.parse(event.data))
       }
     };
@@ -28,7 +28,7 @@ const Msg = (msgdata) => (
       <p>
         {msgdata}
         </p>
-      {/* <button onClick={handleclose(msgdata)}>Close</button> */}
+      <button onClick={handleclose(msgdata)}>Close</button>
     </div>
   );
   var handleclose= function(toastData){
